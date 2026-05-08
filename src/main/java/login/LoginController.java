@@ -25,7 +25,7 @@ public class LoginController extends GlobalComponents {
     public boolean putEmail(String email){
         try{
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            System.out.println("Received Email"+email);
+            //System.out.println("Received Email"+email);
 
             wait.until(ExpectedConditions.visibilityOf(loginPage.getEmailInput()));
             if(isElementDisplayed(loginPage.getEmailInput())){

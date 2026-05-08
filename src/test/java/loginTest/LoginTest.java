@@ -39,7 +39,5 @@ public class LoginTest  extends BaseTest {
 
         boolean isClickedOnVerifyOtpButton = loginController.clickOnVerifyOtpButton();
         Assert.assertTrue(isClickedOnVerifyOtpButton,"Verify Otp Button Not Clicked");
-
-        Thread.sleep(5000);
       }
 }
