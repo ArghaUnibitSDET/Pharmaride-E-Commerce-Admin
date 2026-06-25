@@ -62,7 +62,7 @@ public class OrderTest extends BaseTest {
         Assert.assertTrue(isVerified, "Search by Customer Name verification failed.");
     }
 
-    @Test(priority = 5, enabled = true)
+    @Test(priority = 5, enabled = false)
     public void verifyAllStatusFilters() throws InterruptedException {
         boolean isVerified = orderController.verifyAllStatusFilters();
         Assert.assertTrue(isVerified, "All Status filters verification failed.");
@@ -70,7 +70,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 6, enabled = false)
+    @Test(priority = 6, enabled = true)
     public void verifyViewOrderDetails() throws InterruptedException {
         boolean isVerified = orderController.verifyViewOrderDetails();
         Assert.assertTrue(isVerified, "View Order Details verification failed.");
@@ -78,7 +78,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 7, enabled = false)
+    @Test(priority = 7, enabled = true)
     public void verifyConfirmOrder() throws InterruptedException {
         boolean isVerified = orderController.verifyConfirmOrder();
         Assert.assertTrue(isVerified, "Confirm Order button verification failed.");
@@ -86,7 +86,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 8, enabled = false)
+    @Test(priority = 8, enabled = true)
     public void verifyInvoiceDownload() throws InterruptedException {
         boolean isVerified = orderController.verifyInvoiceDownload();
         Assert.assertTrue(isVerified, "Invoice Download button verification failed.");
@@ -94,7 +94,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 9, enabled = false)
+    @Test(priority = 9, enabled = true)
     public void verifyPaymentCalculations() throws InterruptedException {
         boolean isVerified = orderController.verifyPaymentCalculations();
         Assert.assertTrue(isVerified, "Payment Calculations verification failed.");
@@ -102,7 +102,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 10, enabled = false)
+    @Test(priority = 10, enabled = true)
     public void verifyOrderTimeline() throws InterruptedException {
         boolean isVerified = orderController.verifyOrderTimeline();
         Assert.assertTrue(isVerified, "Order Timeline verification failed.");

@@ -38,6 +38,7 @@ public class LoginController extends GlobalComponents {
             wait.until(ExpectedConditions.visibilityOf(loginPage.getEmailInput()));
             if (isElementDisplayed(loginPage.getEmailInput())) {
                 loginPage.getEmailInput().sendKeys(email);
+                Thread.sleep(2000);
             } else {
                 System.out.println("Email Input Failed");
             }
