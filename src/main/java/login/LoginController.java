@@ -2,6 +2,16 @@ package login;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -9,50 +19,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.GlobalComponents;
 
-import java.sql.SQLOutput;
 import java.time.Duration;
 
 public class LoginController extends GlobalComponents {
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
     private LoginPage loginPage;
 
-    public LoginController(WebDriver driver){
+    public LoginController(WebDriver driver) {
         super(driver);
         loginPage = new LoginPage(driver);
-        PageFactory.initElements(driver,this);
+        PageFactory.initElements(driver, this);
     }
 
-    public boolean putEmail(String email){
-        try{
+    public boolean putEmail(String email) {
+        try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             //System.out.println("Received Email"+email);
 
             wait.until(ExpectedConditions.visibilityOf(loginPage.getEmailInput()));
-            if(isElementDisplayed(loginPage.getEmailInput())){
+            if (isElementDisplayed(loginPage.getEmailInput())) {
                 loginPage.getEmailInput().sendKeys(email);
-            }
-            else {
+            } else {
                 System.out.println("Email Input Failed");
             }
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Failed to put Email" + e);
             return false;
         }
     }
 
-    public boolean clickOnSendOtpButton(){
-        try{
-            if(isElementDisplayed(loginPage.getSendOtpButton())){
+    public boolean clickOnSendOtpButton() {
+        try {
+            if (isElementDisplayed(loginPage.getSendOtpButton())) {
                 loginPage.sendOtpButton.click();
-            }
-            else {
+            } else {
                 System.out.println("Send Otp Button Click Failed");
             }
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Failed to click on send otp button" + e);
             return false;
         }
@@ -60,17 +64,30 @@ public class LoginController extends GlobalComponents {
 
     public boolean putOtp(String... otp) {
         try {
-            WebElement[] otpFields = {
-                    loginPage.getOtpField1(),
-                    loginPage.getOtpField2(),
-                    loginPage.getOtpField3(),
-                    loginPage.getOtpField4(),
-                    loginPage.getOtpField5(),
-                    loginPage.getOtpField6()
-            };
-
             for (int i = 0; i < otp.length; i++) {
-                otpFields[i].sendKeys(otp[i]);
+                int index = i + 1;
+                By locator = By.xpath("(//input[@type='text'])[" + index + "]");
+
+                boolean vis = waitForElementVisible(locator, 30);
+                boolean clickable = waitForElementToBeClickable(locator, 30);
+                if (!vis || !clickable) {
+                    System.out.println("Otp Field " + index + " not ready (vis=" + vis + ", clickable=" + clickable + ")");
+                    return false;
+                }
+
+                WebElement field = driver.findElement(locator);
+                scrollIntoElement(field);
+
+                try {
+                    field.clear();
+                    field.click();
+                    field.sendKeys(otp[i]);
+                } catch (ElementNotInteractableException enie) {
+                    ((JavascriptExecutor) driver).executeScript(
+                            "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));",
+                            field, otp[i]
+                    );
+                }
             }
             return true;
 
@@ -80,20 +97,21 @@ public class LoginController extends GlobalComponents {
         }
     }
 
-    public boolean clickOnVerifyOtpButton(){
-        try{
-            if(isElementDisplayed(loginPage.getVerifyOtpButton())){
+    public boolean clickOnVerifyOtpButton() {
+        try {
+            if (isElementDisplayed(loginPage.getVerifyOtpButton())) {
                 loginPage.getVerifyOtpButton().click();
+            } else {
+                System.out.println("Verify Otp Button Click Failed");
             }
-            else {
-                System.out.println("Failed to click");
-            }
+
             return true;
-        }
-        catch (Exception e){
-            System.out.println("Failed to click on Verify Otp Button"+e);
+        } catch (Exception e) {
+            System.out.println("Failed to click on Verify Otp Button" + e);
             return false;
         }
+
     }
+
 
 }

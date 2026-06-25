@@ -31,12 +31,9 @@ public class OrderController extends GlobalComponents {
         }
     }
 
-    // --- Orders List Page Functions ---
-
     public boolean clickOnOrderMenu() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.visibilityOf(orderPage.getOrderButton()));
+            waitForElementVisible(orderPage.getOrderButton(), 10);
             if (isElementDisplayed(orderPage.getOrderButton())) {
                 orderPage.getOrderButton().click();
                 return true;
@@ -50,38 +47,54 @@ public class OrderController extends GlobalComponents {
 
     public boolean verifyOrdersPageLoaded() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.visibilityOf(orderPage.getOrderPageHeading()));
+            if (!waitForElementVisible(orderPage.getOrderPageHeading(), 10)) {
+                System.out.println("Verification failed: Order page heading not visible.");
+                return false;
+            }
+
             if (!isElementDisplayed(orderPage.getOrderPageHeading())) {
                 System.out.println("Verification failed: Order page heading not displayed.");
                 return false;
             }
-            String headingText = orderPage.getOrderPageHeading().getText();
-            System.out.println("Heading verified: " + headingText);
 
-            if (!isElementDisplayed(orderPage.getSearchInput())) {
-                System.out.println("Verification failed: Search input not displayed.");
+            String expectedHeadingText = "Orders Management";
+            String actualHeadingText = orderPage.getOrderPageHeading().getText();
+
+            if (!expectedHeadingText.equals(actualHeadingText)) {
+                System.out.println("Heading Text is " + actualHeadingText + " which is incorrect");
                 return false;
             }
 
-            if (!isElementDisplayed(orderPage.getStatusFilter())) {
-                System.out.println("Verification failed: Status filter dropdown not displayed.");
+            System.out.println("Heading verified: " + actualHeadingText);
+
+            if (!waitForElementVisible(orderPage.getSearchInput(), 10)) {
+                System.out.println("Verification failed: Search input not visible.");
+                return false;
+            }
+
+            if (!waitForElementVisible(orderPage.getStatusFilter(), 10)) {
+                System.out.println("Verification failed: Status filter not visible.");
                 return false;
             }
 
             List<WebElement> rows = orderPage.getOrderRows();
             System.out.println("Table verified with " + rows.size() + " initial rows.");
+
             return true;
+
         } catch (Exception e) {
-            System.out.println("Error in verifyOrdersPageLoaded: " + e);
+            System.out.println("Error in verifyOrdersPageLoaded: " + e.getMessage());
             return false;
         }
     }
 
     public boolean verifySearchByOrderId() {
         try {
+            waitForElementVisible(orderPage.getSearchInput(), 10);
+
             clearAndType(orderPage.getSearchInput(), "");
-            Thread.sleep(1000);
+
+            waitForMultipleElementsVisible(orderPage.getOrderRows(), 10);
 
             List<WebElement> initialRows = orderPage.getOrderRows();
             if (initialRows.isEmpty()) {
@@ -94,7 +107,6 @@ public class OrderController extends GlobalComponents {
             System.out.println("Searching for Order ID: " + targetOrderId);
 
             clearAndType(orderPage.getSearchInput(), targetOrderId);
-            Thread.sleep(2000);
 
             List<WebElement> filteredRows = orderPage.getOrderRows();
             if (filteredRows.isEmpty()) {
@@ -102,10 +114,12 @@ public class OrderController extends GlobalComponents {
                 return false;
             }
 
-            for (WebElement row : filteredRows) {
-                String rowOrderId = row.findElement(By.xpath("./td[1]")).getText().trim();
+            for (int i = 0; i < filteredRows.size(); i++) {
+                String rowOrderId = orderPage.getFirstOrderId().getText().trim();
+
                 if (!rowOrderId.equals(targetOrderId)) {
-                    System.out.println("Mismatch! Row order ID: " + rowOrderId + " vs searched: " + targetOrderId);
+                    System.out.println("Mismatch! Row order ID: " + rowOrderId +
+                            " vs searched: " + targetOrderId);
                     return false;
                 }
             }
@@ -118,57 +132,75 @@ public class OrderController extends GlobalComponents {
         } finally {
             try {
                 clearAndType(orderPage.getSearchInput(), "");
-                Thread.sleep(1000);
+                waitForMultipleElementsVisible(orderPage.getOrderRows(), 10);
             } catch (Exception ignored) {}
         }
     }
 
     public boolean verifySearchByCustomerName() {
         try {
-            clearAndType(orderPage.getSearchInput(), "");
-            Thread.sleep(1000);
+            waitForElementVisible(orderPage.getSearchInput(), 10);
 
-            List<WebElement> initialRows = orderPage.getOrderRows();
-            if (initialRows.isEmpty()) {
+            clearAndType(orderPage.getSearchInput(), "");
+
+            waitForMultipleElementsVisible(orderPage.getOrderRows(), 10);
+
+            if (orderPage.getOrderRows().isEmpty()) {
                 System.out.println("No orders available to verify search by Customer Name.");
                 return true;
             }
 
-            WebElement firstRow = initialRows.get(0);
-            String rawCustomerText = firstRow.findElement(By.xpath("./td[2]")).getText().trim();
-            String targetCustomerName = rawCustomerText;
-            if (rawCustomerText.contains("\n")) {
-                targetCustomerName = rawCustomerText.split("\n")[0].trim();
+            String targetCustomerName = orderPage.getFirstCustomerName()
+                    .getText()
+                    .trim();
+
+            if (targetCustomerName.contains("\n")) {
+                targetCustomerName = targetCustomerName.split("\n")[0].trim();
             }
+
             System.out.println("Searching for Customer Name: " + targetCustomerName);
 
             clearAndType(orderPage.getSearchInput(), targetCustomerName);
-            Thread.sleep(2000);
 
-            List<WebElement> filteredRows = orderPage.getOrderRows();
-            if (filteredRows.isEmpty()) {
+            Thread.sleep(2000); // or explicit wait
+
+            List<WebElement> filteredCustomerNames = orderPage.getCustomerNames();
+
+            if (filteredCustomerNames.isEmpty()) {
                 System.out.println("Search returned 0 rows for customer " + targetCustomerName);
                 return false;
             }
 
-            for (WebElement row : filteredRows) {
-                String rowCustomerName = row.findElement(By.xpath("./td[2]")).getText().trim();
-                if (!rowCustomerName.toLowerCase().contains(targetCustomerName.toLowerCase())) {
-                    System.out.println("Mismatch! Row customer: " + rowCustomerName + " vs searched: " + targetCustomerName);
+            for (WebElement customerName : filteredCustomerNames) {
+                String actualCustomerName = customerName.getText().trim();
+
+                if (actualCustomerName.contains("\n")) {
+                    actualCustomerName = actualCustomerName.split("\n")[0].trim();
+                }
+
+                if (!actualCustomerName.toLowerCase()
+                        .contains(targetCustomerName.toLowerCase())) {
+
+                    System.out.println("Mismatch! Row customer: " +
+                            actualCustomerName +
+                            " vs searched: " +
+                            targetCustomerName);
+
                     return false;
                 }
             }
 
             System.out.println("Successfully verified search by Customer Name.");
             return true;
+
         } catch (Exception e) {
-            System.out.println("Error in verifySearchByCustomerName: " + e);
+            System.out.println("Error in verifySearchByCustomerName: " + e.getMessage());
             return false;
         } finally {
             try {
                 clearAndType(orderPage.getSearchInput(), "");
-                Thread.sleep(1000);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 

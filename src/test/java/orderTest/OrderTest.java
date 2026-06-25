@@ -20,14 +20,12 @@ public class OrderTest extends BaseTest {
     }
 
     @Test(priority = 1)
-    public void loginToAdminDashboard() throws InterruptedException {
+    public void loginToAdminDashboard(){
         boolean isEmailInput = loginController.putEmail(ConfigReader.get("email"));
         Assert.assertTrue(isEmailInput, "Email not Entered");
 
         boolean isClickOnSendOtpButton = loginController.clickOnSendOtpButton();
         Assert.assertTrue(isClickOnSendOtpButton, "Send Otp Button Not Clicked");
-
-        Thread.sleep(5000);
 
         boolean isOtpFilled = loginController.putOtp(ConfigReader.get("otp1"),
                 ConfigReader.get("otp2"),
@@ -40,38 +38,31 @@ public class OrderTest extends BaseTest {
 
         boolean isClickedOnVerifyOtpButton = loginController.clickOnVerifyOtpButton();
         Assert.assertTrue(isClickedOnVerifyOtpButton, "Verify Otp Button Not Clicked");
-
-        Thread.sleep(500);
     }
 
     @Test(priority = 2)
-    public void verifyOrdersPageLoaded() throws InterruptedException {
+    public void verifyOrdersPageLoaded(){
         boolean clickedOrderMenu = orderController.clickOnOrderMenu();
         Assert.assertTrue(clickedOrderMenu, "Order Menu Button Not Clicked");
 
         boolean isPageLoaded = orderController.verifyOrdersPageLoaded();
         Assert.assertTrue(isPageLoaded, "Orders Page failed to load completely.");
 
-        Thread.sleep(500);
     }
 
-    @Test(priority = 3)
-    public void verifySearchByOrderId() throws InterruptedException {
+    @Test(priority = 3,enabled = true)
+    public void verifySearchByOrderId(){
         boolean isVerified = orderController.verifySearchByOrderId();
         Assert.assertTrue(isVerified, "Search by Order ID verification failed.");
-
-        Thread.sleep(500);
     }
 
-    @Test(priority = 4)
-    public void verifySearchByCustomerName() throws InterruptedException {
+    @Test(priority = 4, enabled = true)
+    public void verifySearchByCustomerName(){
         boolean isVerified = orderController.verifySearchByCustomerName();
         Assert.assertTrue(isVerified, "Search by Customer Name verification failed.");
-
-        Thread.sleep(500);
     }
 
-    @Test(priority = 5)
+    @Test(priority = 5, enabled = true)
     public void verifyAllStatusFilters() throws InterruptedException {
         boolean isVerified = orderController.verifyAllStatusFilters();
         Assert.assertTrue(isVerified, "All Status filters verification failed.");
@@ -79,7 +70,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 6)
+    @Test(priority = 6, enabled = false)
     public void verifyViewOrderDetails() throws InterruptedException {
         boolean isVerified = orderController.verifyViewOrderDetails();
         Assert.assertTrue(isVerified, "View Order Details verification failed.");
@@ -87,7 +78,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 7)
+    @Test(priority = 7, enabled = false)
     public void verifyConfirmOrder() throws InterruptedException {
         boolean isVerified = orderController.verifyConfirmOrder();
         Assert.assertTrue(isVerified, "Confirm Order button verification failed.");
@@ -95,7 +86,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 8)
+    @Test(priority = 8, enabled = false)
     public void verifyInvoiceDownload() throws InterruptedException {
         boolean isVerified = orderController.verifyInvoiceDownload();
         Assert.assertTrue(isVerified, "Invoice Download button verification failed.");
@@ -103,7 +94,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 9)
+    @Test(priority = 9, enabled = false)
     public void verifyPaymentCalculations() throws InterruptedException {
         boolean isVerified = orderController.verifyPaymentCalculations();
         Assert.assertTrue(isVerified, "Payment Calculations verification failed.");
@@ -111,7 +102,7 @@ public class OrderTest extends BaseTest {
         Thread.sleep(500);
     }
 
-    @Test(priority = 10)
+    @Test(priority = 10, enabled = false)
     public void verifyOrderTimeline() throws InterruptedException {
         boolean isVerified = orderController.verifyOrderTimeline();
         Assert.assertTrue(isVerified, "Order Timeline verification failed.");

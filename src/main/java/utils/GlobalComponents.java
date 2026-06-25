@@ -3,6 +3,7 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -30,10 +31,47 @@ public class GlobalComponents {
         }
     }
 
-    public boolean waitForElementVisible(WebDriver driver, WebElement element, int timeoutInSeconds) {
+    public boolean waitForElementVisible(WebElement element, int timeoutInSeconds) {
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
             wait.until(ExpectedConditions.visibilityOf(element));
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean waitForMultipleElementsVisible(List<WebElement> elements, int timeoutInSeconds) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+            wait.until(ExpectedConditions.visibilityOfAllElements(elements));
+            return true;
+        } catch (Exception e) {
+            System.out.println("Elements not visible: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Overload that accepts a locator. This is more reliable than waiting on a WebElement
+    // when the element may not be present in the DOM yet or when PageFactory proxies
+    // cause stale/no such element exceptions.
+    public boolean waitForElementVisible(By locator, int timeoutInSeconds) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    // Wait until an element located by the locator is clickable (visible and enabled)
+    public boolean waitForElementToBeClickable(By locator, int timeoutInSeconds) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds));
+            wait.until(ExpectedConditions.elementToBeClickable(locator));
             return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -28,6 +28,12 @@ public class OrderPage {
     @FindBy(css = "tbody tr")
     public List<WebElement> orderRows;
 
+    @FindBy(xpath = "//td[1]")
+    public List<WebElement> orderIds;
+
+    @FindBy(xpath = "(//td)[2]")
+    public List<WebElement> customerNames;
+
     // --- Order Details Drawer ---
 
     @FindBy(xpath = "//h1[text()='Order Details']")
@@ -106,5 +112,17 @@ public class OrderPage {
 
     public WebElement getOrderTimelineHeading() {
         return orderTimelineHeading;
+    }
+
+    public WebElement getFirstOrderId() {
+        return orderIds.get(0);
+    }
+
+    public List<WebElement> getCustomerNames() {
+        return customerNames;
+    }
+
+    public WebElement getFirstCustomerName() {
+        return customerNames.get(0);
     }
 }
